@@ -1,0 +1,209 @@
+---
+title: '开始使用'
+description: '开始使用lime-blog主题'
+order: 1
+---
+
+import { Steps, Aside, Tabs, TabItem } from 'astro-pure/user'
+
+## 安装
+
+有两种安装方式。使用“模板”方式轻量级简单，但难以更新;而使用“Fork”方式易于更新 ，但是需要一些 git 技巧。
+
+### 使用模板安装
+
+<Aside type='tip'>
+Astro官方的文档中有一篇很棒的文章能够教你设置项目 ：将现有项目迁移到 [安装和设置Astro主题或入门模板](https://docs.astro.build/en/install-and-setup/#use-a-theme-or-starter-template) 
+</Aside>
+
+<Steps>
+
+1. 安装主题
+
+   在您的用户目录中执行以下命令以安装主题：
+   
+   <Tabs>
+   <TabItem label='bun'>
+   ```shell
+   bun create astro@latest --template cworld1/astro-theme-pure
+   ```
+   <Aside type='tip'>
+   对于 Bun ，如果安装速度较慢，建议使用镜像配置，在项目根目录下创建：
+
+   ```toml title="bunfig.toml"
+   [install]
+   registry = "<npm mirror site>"
+   ```
+
+   有关其他 PM 镜像配置的详细信息，您可能需要查看其官方文档。
+   </Aside>
+   </TabItem>
+   <TabItem label='pnpm'>
+   ```shell
+   pnpm create astro@latest --template cworld1/astro-theme-pure
+   ```
+   </TabItem>
+   <TabItem label='yarn'>
+   ```shell
+   yarn create astro --template cworld1/astro-theme-pure
+   ```
+   </TabItem>
+   <TabItem label='npm'>
+   ```shell
+   npm create astro@latest -- --template cworld1/astro-theme-pure
+   ```
+   </TabItem>
+   </Tabs>
+
+   默认情况下，此命令将使用模板存储库的主分支。要使用其他分支名称，请将其作为参数的一部分传递。 `--template` argument: `cworld1/astro-theme-pure#<branch>`.
+
+2. 回答问题并按照 CLI 向导的说明进行作。
+
+3. 成功了！
+
+   您现在可以 [启动 Astro 开发服务器](https://docs.astro.build/en/install-and-setup/#start-the-astro-dev-server) 并查看项目的实时预览，同时将其制作为您自己的项目！
+
+</Steps>
+
+### 使用 Fork 安装
+
+您只需 [单击主题存储库的 fork 按钮](https://github.com/cworld1/astro-theme-pure/fork) 即可创建您的项目，然后将 fork 后的存储库克隆到您的本地计算机。
+
+```shell
+git clone https://github.com/<your-username>/limeblog.git
+```
+
+然后，您可以启动 Astro 开发服务器并查看项目的实时预览，同时将其制作为您自己的项目！
+
+## 启动开发服务器
+
+转到您的项目目录：
+
+```shell
+cd ./<your-project>
+```
+
+<Tabs>
+<TabItem label='bun'>
+```shell
+bun dev
+```
+</TabItem>
+<TabItem label='pnpm'>
+```shell
+pnpm dev
+```
+</TabItem>
+<TabItem label='yarn'>
+```shell
+yarn run dev
+```
+</TabItem>
+<TabItem label='npm'>
+```shell
+npm run dev
+```
+</TabItem>
+</Tabs>
+
+接下来，请先阅读配置说明，继续配置主题。
+
+## 迁移到Astro
+
+请参阅 [Astro ：将现有项目迁移到 Astro 。](https://docs.astro.build/en/guides/migrate-to-astro/).
+
+## 主题文件结构
+
+主题文件结构如下：
+
+- `public`: 将复制到根目录的静态资源
+- `src`:
+  - `assets`: 静态资源
+  - `components`: 主题中使用的组件，还包括类似用户的组件，如`Card`、`Collapse`、`Spoiler`等 
+  - `layouts`:基本网站布局
+  - `pages`: 页面如 `404` 、 `about`、 `blog`、 `docs`、 `index`等。
+  - `plugins`: 主题中使用的扩展插件
+  - `types`: Typescript 类型定义
+  - `utils`: 公用程序
+  - `site.config.ts`: 主题配置文件
+- `astro.config.mjs`: Astro 配置文件
+- `eslint.config.mjs`: ESLint 配置文件
+- `prettier.config.mjs`: 预分级配置文件
+- `uno.config.ts`: UnoCSS 配置文件
+- `tsconfig.json`: Typescript 配置文件
+- `package.json`: 封装信息
+
+## 开始设置
+
+
+<Steps>
+
+1. 删除文档文件
+
+   - 删除目录： `src/pages/docs`
+   - 删除以下文件中的菜单声明： `src/site.config.ts`:
+   
+   ```ts title="src/site.config.ts"
+   export const theme: ThemeUserConfig = {
+      // ...
+      /** Configure the header of your site. */
+      header: {
+         menu: [
+            { title: 'Blog', link: '/blog' },
+            { title: 'Docs', link: '/docs' }, // [!code --]
+            // ...
+         ],
+      },
+   }
+   ```
+
+   - 删除以下文件中的内容集合： `src/content.config.ts`:
+
+   ```ts title="src/content.config.ts"
+   const docs = defineCollection({ // [!code --]
+   loader: glob({ base: './src/content/docs', pattern: '**/*.{md,mdx}' }), // [!code --]
+   schema: ({ image }) => // [!code --]
+      z.object({ // [!code --]
+         ... // [!code --]
+      }) // [!code --]
+   }) // [!code --]
+   export const collections = { blog, docs } // [!code --]
+   export const content = { blog } // [!code ++]
+   ```
+
+2. 删除 `packages` 目录（这将由我们的 NPM 包导入）
+
+3. 更改网站图标。
+
+   <Aside type='tip'>
+   [Favicon.io](https://favicon.io/) 是一个很棒的工具，可以帮助您快速生成网站图标。
+   </Aside>
+
+   将 `public/favicon/*` 中的文件替换为您自己的网站图标。
+
+4. 替换您的头像图像。
+
+   将 `src/assets/avatar.png` 中的文件替换为您自己的头像图像。
+
+5. 配置站点
+
+   您可以在配置文件 `src/site.config.ts` 中配置您的站点。
+
+   ```ts title="src/site.config.ts"
+   export const theme: ThemeUserConfig = {
+      title: 'lime blog',
+      author: 'jiangzhihunkeji',
+      site: 'https://jhkj.qzz.io',
+      description: '欲买桂花同载酒，终不似，少年游。',
+      // ...
+   }
+
+   export const integ: IntegrationUserConfig = { /* ... */ }
+   // ...
+   ```
+
+6. Typescript 语法
+
+   配置 `site.config.ts` 文件使用 Typescript 语法。 如果您不熟悉 TS 语法，请先阅读 [此处](https://learnxinyminutes.com/docs/typescript/)。
+
+</Steps>
